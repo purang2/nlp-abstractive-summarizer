@@ -48,15 +48,15 @@ print(len(ARTICLE.split(" ")))
 
 inputs = tokenizer([ARTICLE], max_length=1024, return_tensors='pt')
 
-inputs
+print(inputs)
 
-len(inputs[0])
+print(len(inputs[0]))
 
 """### Summarizing Output"""
 
 outputs = model.generate(inputs['input_ids'], num_beams=4, max_length=150, early_stopping=True)
 
-utput_text = [tokenizer.decode(g, skip_special_tokens=True, clean_up_tokenization_spaces=False) for g in outputs]
+output_text = [tokenizer.decode(g, skip_special_tokens=True, clean_up_tokenization_spaces=False) for g in outputs]
 
 output_text[0]
 
