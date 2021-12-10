@@ -8,6 +8,17 @@ Summarization applications by KNU 2021-2 term project
 - 21-12-11 토 : (놀면 폭망한다)
 - 21-12-12 일 : (놀면 폭폭폭망한다)
 
+
+### Target Models
+
+| Model Name | Pretrained Dataset | Model Size |
+| --- | --- | --- |
+| Distil-BART-LARGE | CNN News Article |  |
+| Pegasus | XSum |  |
+| T5-base | - (Original) |  |
+|  |  |  |
+
+
 ### Target Article
 
 ```python
