@@ -13,7 +13,7 @@ Summarization applications by KNU 2021-2 term project
 
 **Streamlit**
 
-- API Documents: are here ([https://docs.streamlit.io/library/api-reference/control-flow/st.form](https://docs.streamlit.io/library/api-reference/control-flow/st.form))
+- API Documents: are here ([https://docs.streamlit.io/library/api-reference/](https://docs.streamlit.io/library/api-reference/)
 - Interface : Huggingface Spaces
 
 
