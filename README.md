@@ -1,4 +1,4 @@
-# summary-of-legends
+# summary termproject
 Summarization applications by KNU 2021-2 term project
 
 ### 4 Days Plan
