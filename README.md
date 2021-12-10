@@ -9,6 +9,15 @@ Summarization applications by KNU 2021-2 term project
 - 21-12-12 일 :  마감
 
 
+### @App
+
+**Streamlit**
+
+- API Documents: are here ([https://docs.streamlit.io/library/api-reference/control-flow/st.form](https://docs.streamlit.io/library/api-reference/control-flow/st.form))
+- Interface : Huggingface Spaces
+
+
+
 ### Target Models
 
 | Model Name | Pretrained Dataset | Model Size |
