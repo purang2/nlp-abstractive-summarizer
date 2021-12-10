@@ -5,9 +5,8 @@ Summarization applications by KNU 2021-2 term project
 
 - 21-12-09 목 : TARGET ARTICLE에 대해 Model 성능 확인. Fine-tuning은 이미 되어 있는 모델들임 (data: xsum, arxiv 등)
 - 21-12-10 금 : Huggingface application 구동 시키기. Pretrained Language Model 속도적 성능 잡기.
-- 21-12-11 토 : (놀면 폭망한다)
-- 21-12-12 일 : (놀면 폭폭폭망한다)
-
+- 21-12-11 토 : 
+- 21-12-12 일 : 
 
 ### Target Models
 
