@@ -1,81 +1,80 @@
-from os import write
-import pandas as pd
-import base64
-from typing import Sequence
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Dec 10 02:08:50 2021
+@author: puran
+"""
 import streamlit as st
-from models import create_nest_sentences, load_summary_model, summarizer_gen, load_model, classifier_zero
-from utils import plot_result, plot_dual_bar_chart, examples_load, example_long_text_load
-import json
-ex_text, ex_license, ex_labels = examples_load()
-ex_long_text = example_long_text_load()
-# if __name__ == '__main__':
-st.header("Summzarization & Multi-label Classification for Long Text")
-st.write("This app summarizes and then classifies your long text with multiple labels.")
-st.write("__Inputs__: User enters their own custom text and labels.")
-st.write("__Outputs__: A summary of the text, label likelihood percentages and a downloadable csv of the results.")
-with st.form(key='my_form'):
-    example_text = ex_long_text #ex_text
-    display_text = "[Excerpt from Project Gutenberg: Frankenstein]\n" + example_text + "\n\n" + ex_license
+import torch 
+#import transformers 
+from transformers import pipeline
+#from transformers import 
+st.header("Header: Abstractive Summarizer Machine!")
+
+st.write("Information")
+st.write("__Inputs__: Text your input article!!")
+st.write("__Outputs__: Summarizing output text by Google-Pegasus! ")
+
+
+plms =["facebook/bart-large-cnn", "google/pegasus-xsum", "t5-base" ]
+
+
+def load_plms(model_name):
+    #model_name = "google/pegasus-xsum"
+    summarizer = pipeline(task="summarization", model=model_name) 
+    
+    return summarizer    
+    
+    
+def get_summarizer(summarizer, sequence:str, maximum_tokens:int, minimum_tokens:int):
+	output = summarizer(sequence, num_beams=4, max_length=maximum_tokens, min_length=minimum_tokens, do_sample=False)
+	return output[0].get('summary_text')
+
+
+
+ARTICLE ="""New York (CNN)
+When Liana Barrientos was 23 years old, she got married in Westchester County, New York.A year later, she got married again in Westchester County, but to a different man and without divorcing her first husband.Only 18 days after that marriage, she got hitched yet again. Then, Barrientos declared "I do" five more times, sometimes only within two weeks of each other.In 2010, she married once more, this time in the Bronx. In an application for a marriage license, she stated it was her "first and only" marriage.Barrientos, now 39, is facing two criminal counts of "offering a false instrument for filing in the first degree," referring to her false statements on the 2010 marriage license application, according to court documents.
+Prosecutors said the marriages were part of an immigration scam. On Friday, she pleaded not guilty at State Supreme Court in the Bronx, according to her attorney, Christopher Wright, who declined to comment further. After leaving court, Barrientos was arrested and charged with theft of service and criminal trespass for allegedly sneaking into the New York subway through an emergency exit, said Detective Annette Markowski, a police spokeswoman. In total, Barrientos has been married 10 times, with nine of her marriages occurring between 1999 and 2002. All occurred either in Westchester County, Long Island, New Jersey or the Bronx. She is believed to still be married to four men, and at one time, she was married to eight men at once, prosecutors say. Prosecutors said the immigration scam involved some of her husbands, who filed for permanent residence status shortly after the marriages. Any divorces happened only after such filings were approved. It was unclear whether any of the men will be prosecuted.
+ The case was referred to the Bronx District Attorney\'s Office by Immigration and Customs Enforcement and the Department of Homeland Security\'s Investigation Division. Seven of the men are from so-called "red-flagged" countries, including Egypt, Turkey, Georgia, Pakistan and Mali. Her eighth husband, Rashid Rajput, was deported in 2006 to his native Pakistan after an investigation by the Joint Terrorism Task Force. If convicted, Barrientos faces up to four years in prison.  Her next court appearance is scheduled for May 18."""
+
+
+
+with st.spinner('Loading Pretrained Models (_please allow for 30 seconds_)...'):
+    summarizer_1 = load_plms(plms[0])   
+    summarizer_2 = load_plms(plms[1])   
+    summarizer_3 = load_plms(plms[2])   
+    
+
+with st.form(key="input_area"):
+    display_text = ARTICLE + "\n\n" 
     text_input = st.text_area("Input any text you want to summaryize & classify here (keep in mind very long text will take a while to process):", display_text)
-    if text_input == display_text:
-        text_input = example_text
-    labels = st.text_input('Possible labels (comma-separated):',ex_labels, max_chars=1000)
-    labels = list(set([x.strip() for x in labels.strip().split(',') if len(x.strip()) > 0]))
-    submit_button = st.form_submit_button(label='Submit')
-with st.spinner('Loading pretrained models (_please allow for 10 seconds_)...'):
-    summarizer = load_summary_model()   
-    classifier = load_model()
+    submit_button = st.form_submit_button(label='SUBMIT')
+
+
+
+output_text = []
+
 if submit_button:
-    if len(labels) == 0:
-        st.write('Enter some text and at least one possible topic to see predictions.')
+    with st.spinner('On summarizing !...wait a second please..'):
+        output_text.append(get_summarizer(summarizer_1, text_input, 150, 5))
+        output_text.append(get_summarizer(summarizer_2, text_input, 150, 5))
+        output_text.append(get_summarizer(summarizer_3, text_input, 150, 5))
+   
     
-    with st.spinner('Generating summaries...'):
-        # For each body of text, create text chunks of a certain token size required for the transformer
-        nested_sentences = create_nest_sentences(document = text_input, token_max_length = 1024)
-        summary = []
-        st.markdown("### Text Chunk & Summaries")
-        st.markdown("Breaks up the original text into sections with complete sentences totaling \
-            less than 1024 tokens, a requirement for the summarizer.")
-        # For each chunk of sentences (within the token max), generate a summary
-        for n in range(0, len(nested_sentences)):
-            text_chunk = " ".join(map(str, nested_sentences[n]))
-            st.markdown(f"###### Original Text Chunk {n+1}/{len(nested_sentences)}" )
-            st.markdown(text_chunk)
-            chunk_summary = summarizer_gen(summarizer, sequence=text_chunk, maximum_tokens = 300, minimum_tokens = 20)
-            summary.append(chunk_summary) 
-            st.markdown(f"###### Partial Summary {n+1}/{len(nested_sentences)}")
-            st.markdown(chunk_summary)
-            # Combine all the summaries into a list and compress into one document, again
-            final_summary = " \n".join(list(summary))
-        # final_summary = summarizer_gen(summarizer, sequence=text_input, maximum_tokens = 30, minimum_tokens = 100)
-        st.markdown("### Combined Summary")
-        st.markdown(final_summary)
+    st.markdown("### Outputs are here !:  ")
+    
+    for i in range(3):
+        st.markdown("**"+ plms[i] +"s Output:  **  ")
+        st.text(output_text[i])
+        st.success(f"{i+1} of 3 are done!")
+        
+    st.success("Congrats!!! ALL DONE!")
+    st.balloons()
+    
+    balloon_button = st.form_submit_button(label='More Balloon?')
+
+    if balloon_button:    
+        st.balloons()
     
     
-        st.markdown("### Top Label Predictions on Summary & Full Text")
-        with st.spinner('Matching labels...'):
-            topics, scores = classifier_zero(classifier, sequence=final_summary, labels=labels, multi_class=True)
-            # st.markdown("### Top Label Predictions: Combined Summary")
-            # plot_result(topics[::-1][:], scores[::-1][:])
-            # st.markdown("### Download Data")
-            data = pd.DataFrame({'label': topics, 'scores_from_summary': scores})
-            # st.dataframe(data)
-            # coded_data = base64.b64encode(data.to_csv(index = False). encode ()).decode()
-            # st.markdown(
-            #     f'<a href="data:file/csv;base64, {coded_data}" download = "data.csv">Download Data</a>',
-            #     unsafe_allow_html = True
-            #     )
-            topics_ex_text, scores_ex_text = classifier_zero(classifier, sequence=example_text, labels=labels, multi_class=True)
-            plot_dual_bar_chart(topics, scores, topics_ex_text, scores_ex_text)
-            data_ex_text = pd.DataFrame({'label': topics_ex_text, 'scores_from_full_text': scores_ex_text})
-            data2 = pd.merge(data, data_ex_text, on = ['label'])
-            st.markdown("### Data Table")
-            with st.spinner('Generating a table of results and a download link...'):
-                coded_data = base64.b64encode(data2.to_csv(index = False). encode ()).decode()
-                st.markdown(
-                    f'<a href="data:file/csv;base64, {coded_data}" download = "data.csv">Click here to download the data</a>',
-                    unsafe_allow_html = True
-                    )
-                st.dataframe(data2)
-            st.success('All done!')
-            st.balloons()
+    
+    
