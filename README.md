@@ -1,13 +1,16 @@
 # summary termproject
 Summarization applications by KNU 2021-2 term project
 
+
+
+<!--
 ### 4 Days Plan
 
 - 21-12-09 목 : TARGET ARTICLE에 대해 Model 성능 확인. Fine-tuning은 이미 되어 있는 모델들임 (data: xsum, arxiv 등)
 - 21-12-10 금 : Huggingface application 구동 시키기. Pretrained Language Model 속도적 성능 잡기. Target Dataset 선정 적용 { cord-19, korean }
 - 21-12-11 토 : Target Dataset 선정 적용 { cord-19, korean }
 - 21-12-12 일 :  마감, 보고서 제출완료~
-
+-->
 
 
 ### @App
