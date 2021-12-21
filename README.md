@@ -15,7 +15,11 @@ Summarization applications by KNU 2021-2 term project
 
 ### @App
 
-**Streamlit**
+
+**Running on hugging-face Spaces**  
+https://huggingface.co/spaces/KNU-Eunchan/Summarizing-app
+  
+**Programmed by Streamlit**
 
 - API Documents: are here ([https://docs.streamlit.io/library/api-reference/](https://docs.streamlit.io/library/api-reference/)
 - Interface : Huggingface Spaces
